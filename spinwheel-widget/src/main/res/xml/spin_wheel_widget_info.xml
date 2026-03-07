@@ -10,6 +10,8 @@
     android:maxResizeHeight="250dp"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_spin_wheel"
+    android:previewImage="@drawable/widget_preview"
+    android:previewLayout="@layout/widget_spin_wheel"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:description="@string/widget_description" />

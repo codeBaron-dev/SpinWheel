@@ -13,7 +13,7 @@
                     "debugMode": false
                 },
                 "assets": {
-                    "host": "https://drive.google.com/your-public-folder-or-direct-links/"
+                    "host": "local"
                 }
             },
             "wheel": {

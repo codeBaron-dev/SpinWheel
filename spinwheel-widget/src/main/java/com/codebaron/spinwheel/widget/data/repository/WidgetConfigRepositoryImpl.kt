@@ -83,10 +83,26 @@ class WidgetConfigRepositoryImpl(
                 else -> null
             }
 
-            resourceId?.let {
-                BitmapFactory.decodeResource(context.resources, it)
+            resourceId?.let { resId ->
+                // Try to decode as bitmap first (for PNG/JPG)
+                BitmapFactory.decodeResource(context.resources, resId)
+                    ?: renderDrawableToBitmap(resId) // Fall back to rendering drawable (for XML)
             }
         }
+
+    private fun renderDrawableToBitmap(resId: Int, size: Int = 500): Bitmap? {
+        return try {
+            val drawable = androidx.core.content.ContextCompat.getDrawable(context, resId)
+                ?: return null
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     override fun saveRotationState(degrees: Float) {
         prefsManager.saveCurrentRotation(degrees)

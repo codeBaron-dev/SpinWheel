@@ -27,22 +27,25 @@
         android:visibility="gone"
         android:text="@string/error_unknown" />
 
-    <!-- Composed Wheel Image (background + wheel + frame + button) -->
+    <!-- Composed Wheel Image (background + wheel + frame + button) - also handles click -->
     <ImageView
         android:id="@+id/iv_wheel_composed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
         android:contentDescription="@string/wheel_description" />
 
-    <!-- Invisible Spin Button Overlay for Click Detection -->
-    <View
+    <!-- Invisible Spin Button Overlay for Click Detection - using ImageButton which is allowed -->
+    <ImageButton
         android:id="@+id/btn_spin"
         android:layout_width="@dimen/spin_button_size"
         android:layout_height="@dimen/spin_button_size"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
+        android:src="@android:color/transparent"
         android:contentDescription="@string/spin_button_description" />
 
 </FrameLayout>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background gradient -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:centerColor="#2d2d44"
+                android:endColor="#1a1a2e"
+                android:startColor="#16213e"
+                android:type="linear" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+
+    <!-- Center circle (wheel representation) -->
+    <item
+        android:bottom="24dp"
+        android:left="24dp"
+        android:right="24dp"
+        android:top="24dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="45"
+                android:centerColor="#FFD700"
+                android:endColor="#FFA500"
+                android:startColor="#FFEC8B"
+                android:type="linear" />
+            <stroke
+                android:width="4dp"
+                android:color="#DAA520" />
+        </shape>
+    </item>
+
+    <!-- Center spin button -->
+    <item
+        android:bottom="64dp"
+        android:left="64dp"
+        android:right="64dp"
+        android:top="64dp">
+        <shape android:shape="oval">
+            <solid android:color="#FF6B35" />
+            <stroke
+                android:width="2dp"
+                android:color="#CC5500" />
+        </shape>
+    </item>
+</layer-list>
