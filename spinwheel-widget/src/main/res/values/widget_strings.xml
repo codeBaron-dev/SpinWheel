@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_name">Spin Wheel</string>
+    <string name="widget_description">A spin wheel widget that you can tap to spin</string>
+    <string name="wheel_description">Spin wheel image</string>
+    <string name="spin_button_description">Tap to spin the wheel</string>
+    <string name="loading_text">Loading...</string>
+    <string name="error_network">Network error. Tap to retry.</string>
+    <string name="error_config">Configuration error.</string>
+    <string name="error_image">Failed to load images.</string>
+    <string name="error_unknown">Something went wrong.</string>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+
+        <!-- Widget Provider -->
+        <receiver
+            android:name=".presentation.widget.SpinWheelWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.codebaron.spinwheel.ACTION_SPIN" />
+                <action android:name="com.codebaron.spinwheel.ACTION_SPIN_COMPLETE" />
+                <action android:name="com.codebaron.spinwheel.ACTION_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/spin_wheel_widget_info" />
+        </receiver>
+
+        <!-- Animation Service -->
+        <service
+            android:name=".presentation.widget.WidgetAnimationService"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
