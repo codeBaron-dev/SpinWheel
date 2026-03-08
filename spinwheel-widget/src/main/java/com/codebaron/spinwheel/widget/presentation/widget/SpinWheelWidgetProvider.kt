@@ -95,6 +95,21 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         // Last widget removed - cleanup
     }
 
+    /**
+     * Updates the state and visual representation of a specific app widget.
+     *
+     * This function follows a multi-stage update strategy:
+     * 1. **Immediate Fast Path**: Attempts to render the widget using local assets synchronously
+     *    to ensure the user sees a valid UI immediately.
+     * 2. **Loading Fallback**: If local assets fail, shows a progress indicator.
+     * 3. **Asynchronous Remote Path**: Launches a coroutine to fetch the latest configuration
+     *    and remote assets via the [WidgetViewModel]. If successful within the 5-second timeout,
+     *    the widget is updated again with the fresh data.
+     *
+     * @param context The application context.
+     * @param appWidgetManager The manager used to perform the widget update.
+     * @param widgetId The unique ID of the widget instance to update.
+     */
     private fun updateWidget(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -134,6 +149,16 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
     }
 
+    /**
+     * Creates and returns a [RemoteViews] instance configured to display the loading state.
+     *
+     * This view toggles the visibility of the progress indicator to visible while hiding
+     * the wheel image and any existing error messages. It serves as an initial state
+     * during data fetching or bitmap processing.
+     *
+     * @param context The context used to retrieve the package name and layout resources.
+     * @return A [RemoteViews] object initialized with the loading UI configuration.
+     */
     private fun createLoadingRemoteViews(context: Context): RemoteViews {
         return RemoteViews(context.packageName, R.layout.widget_spin_wheel).apply {
             setViewVisibility(R.id.progress_loading, View.VISIBLE)
@@ -142,6 +167,19 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
     }
 
+    /**
+     * Creates a fallback [RemoteViews] instance using local resources.
+     *
+     * This method acts as a fast-path for widget updates, ensuring that the widget
+     * displays a functional UI immediately using local drawable assets while
+     * more complex updates (like remote configuration or viewmodel state) are
+     * being processed in the background.
+     *
+     * @param context The application context.
+     * @param widgetId The specific ID of the widget being updated.
+     * @return A [RemoteViews] object initialized with local assets and click listeners.
+     * @throws IllegalStateException If the local bitmaps fail to load.
+     */
     private fun createFallbackRemoteViews(context: Context, widgetId: Int): RemoteViews {
         return RemoteViews(context.packageName, R.layout.widget_spin_wheel).apply {
             // Load local drawable resources directly
@@ -172,6 +210,17 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
     }
 
+    /**
+     * Loads the local drawable resources required to render the spin wheel.
+     *
+     * This method attempts to decode the wheel, frame, and spin button resources into [Bitmap]s.
+     * The background is treated specifically as it may be an XML-defined drawable, which is
+     * rendered to a bitmap or defaulted to a solid color if loading fails.
+     *
+     * @param context The context used to access application resources.
+     * @return A [WheelBitmaps] object containing the loaded assets, or `null` if any
+     *         essential component (wheel, frame, or spin button) fails to load.
+     */
     private fun loadLocalBitmaps(context: Context): WheelBitmaps? {
         return try {
             val resources = context.resources
@@ -199,6 +248,19 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
     }
 
+    /**
+     * Loads a drawable resource and converts it into a [Bitmap].
+     *
+     * This method first attempts to decode the resource directly as a bitmap (suitable for PNG/JPG).
+     * If that fails (e.g., for XML vector drawables), it manually renders the drawable onto a
+     * software [android.graphics.Canvas] using the specified [size].
+     *
+     * @param context The application or activity context.
+     * @param resId The resource ID of the drawable to load.
+     * @param size The desired width and height for the resulting bitmap in pixels.
+     * @return A [Bitmap] representation of the drawable, or `null` if the resource cannot be
+     * loaded or an error occurs.
+     */
     private fun loadDrawableAsBitmap(context: Context, resId: Int, size: Int): Bitmap? {
         return try {
             // Try to decode as bitmap first (PNG/JPG)
@@ -218,12 +280,35 @@ class SpinWheelWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
     }
 
+    /**
+     * Creates a square [Bitmap] of the specified size filled with a single solid color.
+     *
+     * This is used as a fallback mechanism to generate a background when resource
+     * loading fails.
+     *
+     * @param size The width and height of the bitmap in pixels.
+     * @param color The ARGB color to fill the bitmap with.
+     * @return A [Bitmap] object of the specified size and color.
+     */
     private fun createSolidColorBitmap(size: Int, color: Int): Bitmap {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         bitmap.eraseColor(color)
         return bitmap
     }
 
+    /**
+     * Creates and configures the [RemoteViews] for the spin wheel widget based on the current [WidgetState].
+     *
+     * This function handles three primary UI states:
+     * 1. **Success**: Composes the wheel bitmap with the current rotation and attaches click listeners for spinning.
+     * 2. **Error**: Displays a localized error message and attaches a click listener for retrying/refreshing.
+     * 3. **Loading**: Shows a progress indicator while assets or state are being prepared.
+     *
+     * @param context The application context used to retrieve resources and package information.
+     * @param state The current [WidgetState] containing bitmaps, rotation data, and error status.
+     * @param widgetId The unique ID of the widget instance being updated, used for intent routing.
+     * @return A configured [RemoteViews] object ready to be applied to the AppWidgetManager.
+     */
     private fun createRemoteViews(
         context: Context,
         state: WidgetState,

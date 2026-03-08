@@ -5,6 +5,19 @@ import com.codebaron.spinwheel.widget.domain.model.WidgetConfig
 import kotlinx.serialization.SerializationException
 import java.io.IOException
 
+/**
+ * Reducer responsible for managing the state transitions of the SpinWheel widget.
+ *
+ * This class follows the MVI (Model-View-Intent) pattern by taking the current [WidgetState]
+ * and an action (either a [WidgetIntent] or external data updates) to produce a new
+ * immutable [WidgetState].
+ *
+ * It handles the logic for:
+ * - UI lifecycle events (Initialization, Refreshing)
+ * - Spin wheel mechanics (Spinning, Completion, Rotation tracking)
+ * - Configuration and bitmap asset updates
+ * - Error mapping from [Throwable] to domain-specific [WidgetError]
+ */
 class WidgetReducer {
 
     fun reduce(currentState: WidgetState, intent: WidgetIntent): WidgetState {

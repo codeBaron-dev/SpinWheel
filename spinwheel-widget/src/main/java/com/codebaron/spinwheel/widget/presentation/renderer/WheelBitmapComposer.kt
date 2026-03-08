@@ -6,6 +6,17 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import com.codebaron.spinwheel.widget.domain.model.WheelBitmaps
 
+/**
+ * A utility object responsible for composing the final visual representation of the spin wheel.
+ * It layers various [WheelBitmaps] components (background, rotating wheel, frame, and spin button)
+ * onto a single [Bitmap] and provides placeholder bitmaps for loading and error states.
+ *
+ * This composer handles:
+ * 1. Layering order of wheel components.
+ * 2. Applying rotation to the wheel layer.
+ * 3. Scaling bitmaps to the desired output dimensions.
+ * 4. Generating fallback visual states.
+ */
 object WheelBitmapComposer {
 
     private const val DEFAULT_OUTPUT_SIZE = 500

@@ -70,6 +70,15 @@ class WidgetViewModel(
         }
     }
 
+    /**
+     * Initializes the widget by attempting to load the configuration.
+     *
+     * It first attempts to retrieve a cached configuration. If no cache is available,
+     * it falls back to the default bundled configuration. Upon successfully retrieving
+     * a configuration, it updates the state via the reducer and triggers the loading
+     * of wheel assets. In case of a total failure, it updates the state with a
+     * [WidgetError.ConfigError] and emits an error side effect.
+     */
     private suspend fun initializeWidget() {
         // Try cached config first
         val cachedConfig = getCachedConfigUseCase()
@@ -93,6 +102,17 @@ class WidgetViewModel(
         }
     }
 
+    /**
+     * Refreshes the widget configuration from a remote source or falls back to local storage.
+     *
+     * This function attempts to fetch a new configuration if a [configUrl] is provided.
+     * - If [configUrl] is null or empty, it triggers [initializeWidget] to use cached or default settings.
+     * - On success, it updates the state, loads the required assets, and schedules the next refresh.
+     * - On failure, it attempts a graceful degradation by falling back to the cached configuration
+     *   or the default bundled configuration.
+     *
+     * @param configUrl The optional URL to fetch the new configuration from.
+     */
     private suspend fun refreshConfig(configUrl: String? = null) {
         // If no URL provided, use cached or default config
         if (configUrl.isNullOrEmpty()) {
@@ -114,6 +134,17 @@ class WidgetViewModel(
             }
     }
 
+    /**
+     * Asynchronously loads the image assets required for the spin wheel.
+     *
+     * This function uses the [loadWheelImagesUseCase] to fetch bitmaps from the provided [assetsHost].
+     * On success, it updates the view state with the loaded bitmaps using the reducer.
+     * On failure, it updates the state with an [WidgetError.ImageLoadError] and emits
+     * a side effect to notify the UI.
+     *
+     * @param assetsHost The base URL or host path where the assets are stored.
+     * @param assets The [com.codebaron.spinwheel.widget.domain.model.WheelAssets] object containing the specific image paths.
+     */
     private suspend fun loadImages(
         assetsHost: String,
         assets: com.codebaron.spinwheel.widget.domain.model.WheelAssets
@@ -131,6 +162,14 @@ class WidgetViewModel(
             }
     }
 
+    /**
+     * Executes the wheel spin logic by calculating the target rotation based on the current
+     * configuration and emitting a side effect to trigger the UI animation.
+     *
+     * This function updates the repository spinning state, uses [calculateSpinResultUseCase]
+     * to determine the end position, updates the internal state via the reducer, and
+     * notifies the UI to start the animation with the configured duration and easing.
+     */
     private suspend fun performSpin() {
         val config = _state.value.config ?: return
         val currentRotation = _state.value.currentRotation
@@ -154,6 +193,15 @@ class WidgetViewModel(
         )
     }
 
+    /**
+     * Handles the completion of the spin animation.
+     *
+     * This function performs the following cleanup and state updates:
+     * 1. Calculates the normalized [finalRotation] (0-359 degrees).
+     * 2. Persists the final rotation state and updates the spinning status in the [repository].
+     * 3. Emits a [WidgetSideEffect.SpinCompleted] event with the resulting data.
+     * 4. Emits a [WidgetSideEffect.SaveState] event to trigger a global state persistence.
+     */
     private suspend fun onSpinComplete() {
         val finalRotation = _state.value.targetRotation % 360f
         repository.saveRotationState(finalRotation)

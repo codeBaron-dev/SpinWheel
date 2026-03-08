@@ -24,6 +24,24 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+/**
+ * A foreground-capable [Service] responsible for managing the spin animation of the App Widget.
+ *
+ * This service handles the interpolation logic for the wheel's rotation, rendering frame-by-frame
+ * updates to the widget's RemoteViews. It implements frame rate throttling (targeting ~20 FPS)
+ * to balance smooth visual performance with system resource consumption and AppWidgetManager
+ * update limitations.
+ *
+ * The service expects an [Intent] containing:
+ * - [SpinWheelWidgetProvider.EXTRA_WIDGET_ID]: The ID of the widget to animate.
+ * - `from_degrees`: The starting rotation angle (Float).
+ * - `to_degrees`: The target rotation angle (Float).
+ * - `duration`: Animation duration in milliseconds (Int).
+ * - `easing`: The name of the [EasingType] to apply to the animation.
+ *
+ * Upon completion, it broadcasts [SpinWheelWidgetProvider.ACTION_SPIN_COMPLETE] to notify
+ * the provider of the final rotation state.
+ */
 class WidgetAnimationService : Service() {
 
     private val viewModel: WidgetViewModel by inject()
